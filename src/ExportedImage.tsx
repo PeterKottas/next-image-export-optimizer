@@ -180,7 +180,7 @@ function ExportedImage({
       onLoadingComplete={(result) => {
         // for some configurations, the onError handler is not called on an error occurrence
         // so we need to check if the image is loaded correctly
-        if (result.naturalWidth === 0) {
+        if (false && result.naturalWidth === 0) {
           // Broken image, fall back to unoptimized (meaning the original image src)
           setImageError(true);
         }
