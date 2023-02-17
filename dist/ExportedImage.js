@@ -96,7 +96,9 @@ function ExportedImage({ src, priority = false, loading, className, width, heigh
         }), ...(unoptimized && { unoptimized }), ...(priority && { priority }), ...(isSVG && { unoptimized: true }), style: { ...style, ...blurStyle }, loader: imageError || unoptimized === true
             ? fallbackLoader
             : (e) => optimizedLoader({ src, width: e.width }), blurDataURL: automaticallyCalculatedBlurDataURL, onError: (error) => {
-            setImageError(true);
+            if (false) {
+                setImageError(true);
+            }
             setBlurComplete(true);
             // execute the onError function if provided
             onError && onError(error);

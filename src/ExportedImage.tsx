@@ -172,7 +172,9 @@ function ExportedImage({
       }
       blurDataURL={automaticallyCalculatedBlurDataURL}
       onError={(error) => {
-        setImageError(true);
+        if (false) {
+          setImageError(true);
+        }
         setBlurComplete(true);
         // execute the onError function if provided
         onError && onError(error);
