@@ -1,10 +1,8 @@
 import Head from "next/head";
-import ExportedImageLegacy from "../../src/legacy/ExportedImage";
 import ExportedImage from "../../src/ExportedImage";
 
-import smallImage from "../public/images/chris-zhang-Jq8-3Bmh1pQ-unsplash_small.jpg";
-
 import styles from "../styles/Home.module.css";
+import animatedImage from "../public/animated.png";
 
 export default function Home() {
   return (
@@ -20,40 +18,57 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Next-Image-Export-Optimizer</h1>
-        <h2>Optimized example - Legacy</h2>
-        <div
-          style={{
-            position: "relative",
-            width: "50%",
-            height: "200px",
-            marginBottom: "3rem",
-          }}
-        >
-          <ExportedImageLegacy
-            src="images/chris-zhang-Jq8-3Bmh1pQ-unsplash_small.jpg"
-            layout="fill"
-            id="test_image"
-            objectFit="cover"
-            priority={true}
-            alt={"test_image"}
-          />
-        </div>
-        <h2>Optimized example</h2>
+        <h2>Format: .gif</h2>
 
         <div
           style={{
-            marginBottom: "3rem",
             position: "relative",
             width: "50%",
-            height: "200px",
+            height: "500px",
+            marginBottom: "3rem",
           }}
         >
           <ExportedImage
-            src={smallImage}
+            src="/images/402107790_STATIC_NOISE_GIF.gif"
+            id="test_image_gif"
+            alt={"test_image_gif"}
             fill
             style={{ objectFit: "cover" }}
-            id="test_image_future"
-            alt={"test_image"}
+          />
+        </div>
+        <h2>Format: .webp</h2>
+
+        <div
+          style={{
+            position: "relative",
+            width: "50%",
+            height: "500px",
+            marginBottom: "3rem",
+          }}
+        >
+          <ExportedImage
+            src="/images/402107790_STATIC_NOISE_WEBP.webp"
+            id="test_image_webp"
+            alt={"test_image_webp"}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+        <h2>Format: .png</h2>
+
+        <div
+          style={{
+            position: "relative",
+            width: "50%",
+            height: "500px",
+            marginBottom: "3rem",
+          }}
+        >
+          <ExportedImage
+            src={animatedImage}
+            id="test_image_png"
+            alt={"test_image_png"}
+            fill
           />
         </div>
       </main>
