@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const request = require("request");
+const https = require("https");
 const sharp = require("sharp");
 const { createHash } = require("crypto");
 const path = require("path");
 const cliProgress = require("cli-progress");
-
-const crypto = require("crypto");
-
-function hashUrl(url) {
-  const hash = crypto.createHash("sha256");
-  hash.update(url);
-  return hash.digest("hex");
-}
 
 const loadConfig = require("next/dist/server/config").default;
 
@@ -69,7 +61,22 @@ const folderPathForRemoteImages = path.join(
   folderNameForRemoteImages
 );
 
-//
+function urlToFilename(url) {
+  // Remove the protocol from the URL
+  let filename = url.replace(/^(https?|ftp):\/\//, "");
+
+  // Replace special characters with underscores
+  filename = filename.replace(/[/\\:*?"<>|#%]/g, "_");
+
+  // Remove control characters
+  // eslint-disable-next-line no-control-regex
+  filename = filename.replace(/[\x00-\x1F\x7F]/g, "");
+
+  // Trim any leading or trailing spaces
+  filename = filename.trim();
+
+  return filename;
+}
 
 // Create the filenames for the remote images
 const remoteImageFilenames = remoteImageURLs.map((url) => {
@@ -86,15 +93,16 @@ const remoteImageFilenames = remoteImageURLs.map((url) => {
     );
     return;
   }
+  const encodedURL = urlToFilename(url);
 
   const filename = path.join(
     folderPathForRemoteImages,
-    `${hashUrl(url)}.${extension}`
+    `${encodedURL}.${extension}`
   );
 
   return {
     basePath: folderPathForRemoteImages,
-    file: `${hashUrl(url)}.${extension}`,
+    file: `${encodedURL}.${extension}`,
     dirPathWithoutBasePath: "",
     fullPath: filename,
   };
@@ -164,12 +172,12 @@ function ensureDirectoryExists(filePath) {
 
 async function downloadImage(url, filename, folder) {
   return new Promise((resolve, reject) => {
-    request.head(url, function (err, res) {
-      if (err || res.statusCode !== 200) {
+    https.get(url, function (response) {
+      if (response.statusCode !== 200) {
         console.error(
-          `Error: Unable to download ${url} (status code: ${res.statusCode}).`
+          `Error: Unable to download ${url} (status code: ${response.statusCode}).`
         );
-        reject(err || new Error(`Status code: ${res.statusCode}`));
+        reject(new Error(`Status code: ${response.statusCode}`));
         return;
       }
 
@@ -182,7 +190,7 @@ async function downloadImage(url, filename, folder) {
           return;
         }
 
-        request(url)
+        response
           .pipe(fs.createWriteStream(filename))
           .on("error", function (err) {
             console.error(
