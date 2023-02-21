@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import Image from "next/legacy/image";
-const shajs = require("sha.js");
 const splitFilePath = ({ filePath }) => {
     const filenameWithExtension = filePath.split("\\").pop()?.split("/").pop() || "";
     const filePathWithoutFilename = filePath.split(filenameWithExtension).shift();
@@ -45,6 +44,17 @@ const generateImageURL = (src, width, isRemoteImage = false) => {
     }
     return generatedImageURL;
 };
+function urlToFilename(url) {
+    // Remove the protocol from the URL
+    let filename = url.replace(/^(https?|ftp):\/\//, "");
+    // Replace special characters with underscores
+    filename = filename.replace(/[/\\:*?"<>|#%]/g, "_");
+    // Remove control characters
+    filename = filename.replace(/[\x00-\x1F\x7F]/g, "");
+    // Trim any leading or trailing spaces
+    filename = filename.trim();
+    return filename;
+}
 const imageURLForRemoteImage = ({ src, width, }) => {
     const extension = src.split(".").pop();
     // If the extension is not supported, then we log an error and return the src
@@ -53,8 +63,8 @@ const imageURLForRemoteImage = ({ src, width, }) => {
         console.error(`The image ${src} has an unsupported extension. Please use JPG, JPEG, WEBP, PNG, GIF or AVIF.`);
         return src;
     }
-    const hashUrl = shajs("sha256").update(src).digest("hex");
-    return generateImageURL(`${hashUrl}.${extension}`, width, true);
+    const encodedSrc = urlToFilename(src);
+    return generateImageURL(`${encodedSrc}.${extension}`, width, true);
 };
 const optimizedLoader = ({ src, width, }) => {
     const isStaticImage = typeof src === "object";
